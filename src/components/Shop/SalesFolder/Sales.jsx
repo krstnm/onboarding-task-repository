@@ -56,6 +56,7 @@ const Sales = (props) => {
             setproducts(options);
         })
   }
+  
   const getCustomer = () => {
       fetch("/Customers/GetCustomer")
         .then((res) => {
@@ -83,6 +84,7 @@ const Sales = (props) => {
             setstores(options);
     })
   }
+
   const getSales = () =>{
       Axios.get("/Sales/GetSales")
         .then((res) => {
@@ -93,7 +95,6 @@ const Sales = (props) => {
     })
   }
 
-  
   const handleEditSale = (sale) => {
     setsale(sale);
     setopenEdit(true);
@@ -103,6 +104,7 @@ const Sales = (props) => {
     setsale(sale);
     setopenDelete(true);
   }
+
 
   if(customers.length >= 1 && products.length >= 1 && stores.length >= 1){
     return (
@@ -161,7 +163,24 @@ const Sales = (props) => {
     }
     else{
         return(
-            <div></div>
+            <div>
+            <Button disabled ='true' content="New Sale" color="blue" onClick={() => setopen(true)}></Button>
+
+            <Table celled>
+                    <Table.Header>
+                        <Table.Row>
+                            <Table.HeaderCell>Customer</Table.HeaderCell>
+                            <Table.HeaderCell>Product</Table.HeaderCell>
+                            <Table.HeaderCell>Store</Table.HeaderCell>
+                            <Table.HeaderCell>Date Sold</Table.HeaderCell>                            
+                            <Table.HeaderCell>Actions</Table.HeaderCell>
+                            <Table.HeaderCell>Actions</Table.HeaderCell>
+                        </Table.Row>
+                    </Table.Header>
+                    <Table.Body>
+                    </Table.Body>
+                </ Table>
+            </div>
         )
     }
 }
