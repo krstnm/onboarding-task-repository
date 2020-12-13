@@ -24,11 +24,9 @@ const CreateStoreModal = (props) => {
   const handleChange = (e, field) => {
     switch(field){
         case "name":
-            console.log(e.target.value);
             setname(e.target.value);
             break;
         case "address":
-            console.log(e.target.value);
             setaddress(e.target.value);
             break;
         default:
