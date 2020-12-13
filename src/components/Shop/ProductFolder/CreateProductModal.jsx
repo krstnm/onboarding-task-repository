@@ -24,11 +24,9 @@ const CreateProductModal = (props) => {
   const handleChange = (e, field) => {
     switch(field){
         case "name":
-            console.log(e.target.value);
             setname(e.target.value);
             break;
         case "price":
-            console.log(e.target.value);
             setprice(e.target.value);
             break;
         default:
