@@ -22,6 +22,13 @@ const NavigationMenu = (props) => {
     <Menu inverted>
       <Menu.Item
         as={Link}
+        name='React'
+        onClick={handleItemClick}
+        to='/'>
+        React
+      </Menu.Item>
+      <Menu.Item
+        as={Link}
         name='Customer'
         active={activeItem === 'Customer'}
         onClick={handleItemClick}
