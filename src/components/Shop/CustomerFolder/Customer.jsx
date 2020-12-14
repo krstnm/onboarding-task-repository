@@ -59,7 +59,7 @@ useEffect(() => {
         <DeleteCustomerModal customers={customers} customer={customer} opendelete={opendelete} handleModal={(value) => setopenDelete(value)} />
         <Button content="New Customer" color="blue" onClick={() => setopen(true)}></Button>
         
-            <Table sortable celled>
+            <Table sortable striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
@@ -68,7 +68,7 @@ useEffect(() => {
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                     </Table.Row>
                 </Table.Header>
-                <Table.Body>
+                <Table.Body className='tbody-class'>
                     {customers.map((customer, index) => {
                         return(
                             <Table.Row className="customer-row" key ={customer.customerId}>
