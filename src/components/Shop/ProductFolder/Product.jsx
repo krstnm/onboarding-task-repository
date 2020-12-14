@@ -60,7 +60,7 @@ const Product = (props) => {
         <DeleteProductModal product={product} opendelete={opendelete} handleModal={(value) => setopenDelete(value)} />
         <Button content="New Product" color="blue" onClick={() => setopen(true)}></Button>
         
-            <Table celled>
+            <Table sortable striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
