@@ -61,7 +61,7 @@ const Store = (props) => {
         <DeleteStoreModal store={store} opendelete={opendelete} handleModal={(value) => setopenDelete(value)} />
         <Button content="New Store" color="blue" onClick={() => setopen(true)}></Button>
         
-            <Table celled>
+            <Table sortable striped>
                 <Table.Header>
                     <Table.Row>
                         <Table.HeaderCell>Name</Table.HeaderCell>
@@ -73,7 +73,7 @@ const Store = (props) => {
                 <Table.Body>
                     {stores.map((store, index) => {
                         return(
-                            <Table.Row className="customer-row" key ={store.storeId}>
+                            <Table.Row className="store-row" key ={store.storeId}>
                                 <Table.Cell>{store.name}</Table.Cell>
                                 <Table.Cell>{store.address}</Table.Cell>
                                 <Table.Cell>
