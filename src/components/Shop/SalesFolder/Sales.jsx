@@ -56,7 +56,7 @@ const Sales = (props) => {
             setproducts(options);
         })
   }
-  
+
   const getCustomer = () => {
       fetch("/Customers/GetCustomer")
         .then((res) => {
@@ -120,7 +120,7 @@ const Sales = (props) => {
 
             <Button content="New Sale" color="blue" onClick={() => setopen(true)}></Button>
             
-                <Table celled>
+                <Table sortable striped>
                     <Table.Header>
                         <Table.Row>
                             <Table.HeaderCell>Customer</Table.HeaderCell>
