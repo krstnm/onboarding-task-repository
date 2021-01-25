@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Axios from "axios";
 import { Button, Form, Modal} from "semantic-ui-react";
-
+import $ from 'jquery';
 
 const CreateProductModal = (props) => {
   const [name, setname] = useState();
@@ -9,15 +9,15 @@ const CreateProductModal = (props) => {
   const {open, handleModal} = props;
 
   const createProduct = () => {
-    Axios.post('/Products/PostProduct', {
-        name: name,
-        price: price
-    })
-    .then((res) => {
-        handleModal(false);
-    })
-    .catch((err) => {
-        console.log(err)
+    $.ajax({
+        method: "POST",
+        url: "/Products/PostProduct",
+        dataType: 'json',
+        data: JSON.stringify({ "name": name, "price" : price }),
+        contentType: 'application/json',
+        success: function(res){
+            handleModal(false);
+        }
     })
   }
   
