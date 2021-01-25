@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Button, Table, Select } from "semantic-ui-react";
+import { Button, Table, Select, Label} from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import CreateCustomerModal from "./CreateCustomerModal";
 import EditCustomerModal from "./EditCustomerModal";
@@ -13,13 +13,10 @@ const Customer = (props) => {
   const [openEdit, setopenEdit] = useState(false);
   const [opendelete, setopenDelete] = useState(false);
   const [customer, setcustomer] = useState({});
-  const [order, setorder] = useState('DESC');
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState([]);
   const [perPage, setPerPage] = useState(5);
   const [pageCount, setpageCount] = useState(0);
-  const [namedirection, setnamedirection] = useState();
-  const [addressdirection, setaddressdirection] = useState();
 
   useEffect(() => {
       if(!open){
@@ -79,37 +76,25 @@ const Customer = (props) => {
           case 'name':
             if(order === 'DESC'){
                 sortCustomer.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
-                setnamedirection('descending');
-                setaddressdirection(null);
                 const slice = sortCustomer.slice(offset, offset + perPage);
                 setData(slice);
-                setorder('ASC');
               }
               if(order === 'ASC'){
                 sortCustomer.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
-                setnamedirection('ascending');
-                setaddressdirection(null);
                 const slice = sortCustomer.slice(offset, offset + perPage);
                 setData(slice);
-                setorder('DESC');
               }
             break;
         case 'address':
             if(order === 'DESC'){
                 sortCustomer.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
-                setnamedirection(null);
-                setaddressdirection('descending');
                 const slice = sortCustomer.slice(offset, offset + perPage);
                 setData(slice);
-                setorder('ASC');
               }
               if(order === 'ASC'){
                 sortCustomer.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
-                setnamedirection(null);
-                setaddressdirection('ascending');
                 const slice = sortCustomer.slice(offset, offset + perPage);
                 setData(slice);
-                setorder('DESC');
               }
               break;
         default:
@@ -133,8 +118,14 @@ const Customer = (props) => {
             <Table sortable celled fixed>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell sorted={namedirection} onClick={() => onSort('name', order)}>Name</Table.HeaderCell>
-                        <Table.HeaderCell sorted={addressdirection} onClick={() => onSort('address', order)}>Address</Table.HeaderCell>
+                        <Table.HeaderCell>Name
+                          <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('name', 'DESC')} />
+                          <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('name', 'ASC')} />
+                          </Table.HeaderCell>
+                        <Table.HeaderCell>Address
+                          <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('address', 'DESC')} />
+                          <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('address', 'ASC')} />
+                        </Table.HeaderCell>
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                     </Table.Row>
