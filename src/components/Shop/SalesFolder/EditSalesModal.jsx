@@ -1,107 +1,125 @@
-import React, {useState, useEffect} from "react";
-import Axios from "axios";
-import { Button, Form, Modal} from "semantic-ui-react";
+import React, { useState } from "react";
+import { Button, Icon, Modal, Form } from "semantic-ui-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import $ from 'jquery';
 
 const EditSalesModal = (props) => {
-  const [product, setproduct] = useState();
-  const [store, setstore] = useState(); 
-  const [customer, setcustomer] = useState();
+  const { sale, customers, products, stores} = props;
+  const [open, setOpen] = useState(false);
+  const [customer, setCustomer] = useState(sale.customer.customerId);
+  const [product, setProduct] = useState(sale.product.productId);
+  const [store, setStore] = useState(sale.store.storeId);
   const [startDate, setStartDate] = useState(new Date());
-  const {openEdit, handleModal, customers, products, stores, sale} = props;
 
-
-  useEffect(() => {
-    if(sale){
-        setcustomer(sale.customerId);
-        setproduct(sale.productId);
-        setstore(sale.storeId);
-        setStartDate(sale.dateSold);
+  const handleChange = (e, input) => {
+    switch (input) {
+      case "customer":
+        setCustomer(e.target.value);
+        break;
+      case "product":
+        setProduct(e.target.value);
+        break;
+      case "store":
+        setStore(e.target.value);
+        break;
+      default:
+        throw new Error();
     }
-  }, [sale])
+  };
 
-  const editSales = (id) => {
-    Axios.put(`/Sales/PutSales/${id}`, {
-        'salesId': id,
-        'customerId': customer,
-        'productId': product,
-        'storeId': store,
-        'dateSold': startDate
+  const EditSale = (id) => {
+    $.ajax({
+      method: "PUT",
+      url: `/Sales/PutSales/${id}`,
+      dataType: 'json',
+      data: JSON.stringify({ "salesId": id, "customerId": customer, "productId" : product, "storeId" : store, "dateSold" : startDate }),
+      contentType: 'application/json',
+      success: function(res){
+        setOpen(false);
+      }
     })
-    .then((res) => {
-        handleModal(false);
-    })
-    .catch((err) => {
-        console.log(err)
-    })
-  }
+  }    
 
-  const handleCancel = () => {
-      handleModal(false);
-  }
-
-  const handleDropdownChangeCustomer = (event, data) => {
-    setcustomer(data.value);
-  }
-  
-  const handleDropdownChangeProduct = (event, data) => {
-    setproduct(data.value);
-  }
-
-  const handleDropdownChangeStore = (event, data) => {
-    setstore(data.value);
-  }
-
-
-  if (sale) {
-    return (
-        <Modal open={openEdit}>
-            <Modal.Header>Edit sales</Modal.Header>
-                <Modal.Content>
-                    <Form>
-                        <Form.Field>
-                            <label>Date Sold</label>
-                        <DatePicker selected={Date.parse(startDate)} defaultDate={Date.parse(startDate)} label='Date Sold'  dateFormat="MM/dd/yyyy" onChange={date => setStartDate(date)} />
-                        </Form.Field>
-                        <Form.Select fluid label='Customer' defaultValue={sale.customerId} options={customers.map((c, index) => {
-                        return {
-                            key: index,
-                            text: c.label,
-                            value: c.value
-                        }
-                        })} onChange={handleDropdownChangeCustomer} >
-                        </Form.Select>
-                        <Form.Select fluid label='Product' defaultValue={sale.productId} options={products.map((p, index) => {
-                            return {
-                                key: index,
-                                text: p.label,
-                                value: p.value
-                            }
-                        })} onChange={handleDropdownChangeProduct} >
-                        </Form.Select>
-                        <Form.Select fluid label='Stores' defaultValue={sale.storeId} options={stores.map((s, index) => {
-                            return {
-                                key: index,
-                                text: s.label,
-                                value: s.value
-                            }
-                        })} onChange={handleDropdownChangeStore} >
-                        </Form.Select>
-                    </Form>
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button color='black' onClick={handleCancel}>cancel</Button>
-                    <Button content="edit" color='green' icon='checkmark' labelPosition='right' onClick={() => editSales(sale.salesId)} positive></Button>
-                </Modal.Actions>
-            </Modal>
-        )
-  } else {
-      return (
-          <div></div>
-      )
-  }
-}
+  return (
+    <Modal
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
+      open={open}
+      trigger={
+        <Button color="yellow">
+          <Icon name="edit"></Icon>Edit
+        </Button>
+      }
+    >
+      <Modal.Header>Edit sales</Modal.Header>
+      <Modal.Content>
+        <Form>
+        <Form.Field>
+            <label>Date Sold</label>
+            <DatePicker selected={Date.parse(startDate)} defaultDate={Date.parse(startDate)} label='Date Sold'  dateFormat="MM/dd/yyyy" onChange={date => setStartDate(date)} />
+            </Form.Field>
+          <Form.Field>
+            <label>Customer</label>
+            <select value={customer} onChange={(e) => handleChange(e, "customer")} >
+              <option value={sale.customer.customerId}>{sale.customer.name}</option>
+              {customers
+                .filter((c) => c.id !== sale.customer.customerId)
+                .map((customer) => {
+                  return (
+                    <option key={customer.customerId} value={customer.customerId}>
+                      {customer.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </Form.Field>
+          <Form.Field>
+            <label>Product</label>
+            <select value={product} onChange={(e) => handleChange(e, "product")} >
+              <option value={sale.product.productId}>{sale.product.name}</option>
+              {products
+                .filter((p) => p.id != sale.product.productId)
+                .map((product) => {
+                  return (
+                    <option key={product.productId} value={product.productId}>
+                      {product.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </Form.Field>
+          <Form.Field>
+            <label>Store</label>
+            <select value={store} onChange={(e) => handleChange(e, "store")}>
+              <option value={sale.store.storeId}>{sale.store.name}</option>
+              {stores
+                .filter((s) => s.id !== sale.store.storeId)
+                .map((store) => {
+                  return (
+                    <option key={store.storeId} value={store.storeId}>
+                      {store.name}
+                    </option>
+                  );
+                })}
+            </select>
+          </Form.Field>
+        </Form>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button color="black" onClick={() => setOpen(false)}>
+          cancel
+        </Button>
+        <Button
+          content="edit"
+          labelPosition="right"
+          icon="checkmark"
+          onClick={() => EditSale(sale.salesId)}
+          positive
+        />
+      </Modal.Actions>
+    </Modal>
+  );
+};
 
 export default EditSalesModal
