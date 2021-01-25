@@ -1,188 +1,163 @@
-import React, {useEffect, useState} from "react";
-import Axios from "axios";
-import { Button, Table } from "semantic-ui-react";
-import "semantic-ui-css/semantic.min.css";
+import React, { useEffect, useState } from "react";
+import { Table, Select } from "semantic-ui-react";
 import CreateSalesModal from "./CreateSalesModal";
 import EditSalesModal from "./EditSalesModal";
 import DeleteSalesModal from "./DeleteSalesModal";
+import $ from 'jquery';
+import ReactPaginate from 'react-paginate';
 
-const Sales = (props) => {
+const Sales = () => {
   const [sales, setsales] = useState([]);
   const [customers, setcustomers] = useState([]);
   const [products, setproducts] = useState([]);
   const [stores, setstores] = useState([]);
-  const [sale, setsale] = useState({});
-  const [open, setopen] = useState(false);
-  const [openEdit, setopenEdit] = useState(false);
-  const [opendelete, setopenDelete] = useState(false);
-  
-  useEffect(() => {
-    if(!open){
-      getSales();
-      getCustomer();
-      getProduct();
-      getStore();
-    }
-}, [open]);
+  const [order, setorder] = useState('DESC');
+  const [offset, setOffset] = useState(0);
+  const [data, setData] = useState([]);
+  const [perPage, setPerPage] = useState(5);
+  const [pageCount, setpageCount] = useState(0);
+  const [custdirection, setcusdirection] = useState();
 
   useEffect(() => {
-    if(!openEdit){
+    if (sales) {
       getSales();
-      getCustomer();
-      getProduct();
-      getStore();
     }
-  }, [openEdit]);
-  
-  useEffect(() => {
-    if(!opendelete){
-      getSales();
-      getCustomer();
-      getProduct();
-      getStore();
+    if (customers) {
+      getCustomers();
     }
-  }, [opendelete]);
+    if (products) {
+      getProducts();
+    }
+    if (stores) {
+      getStores();
+    }
+  }, [sales]);
 
-  const getProduct = () => {
-      fetch("/Products/GetProduct")
-        .then((res) => {
-            return res.json();
-        })
-        .then(data => {
-            let options = data.map(d => ({
-                "value" : d.productId,
-                "label" : d.name
-            }))
-            setproducts(options);
-        })
+  useEffect(() => {
+    getSales()
+  }, [offset, perPage])
+
+  const getCustomers = () => {
+    $.ajax({
+      method: "GET",
+      url: "/Customers/GetCustomer",
+      dataType: 'json',
+      success: function(res){
+        setcustomers(res);
+      }
+    })
   }
-
-  const getCustomer = () => {
-      fetch("/Customers/GetCustomer")
-        .then((res) => {
-                return res.json();
-        })
-        .then(data => {
-            let options = data.map(d => ({
-                "value" : d.customerId,
-                "label" : d.name
-            }))
-            setcustomers(options);
-        })
-    }
- 
-  const getStore = () => {
-      fetch("/Stores/GetStore")
-        .then((res) => {
-            return res.json();
-        })
-        .then(data => {
-            let options = data.map(d => ({
-                "value" : d.storeId,
-                "label" : d.name
-        }))
-            setstores(options);
+  
+  const getSales = () => {
+    $.ajax({
+      method: "GET",
+      url: "/Sales/GetSales",
+      dataType: 'json',
+      success: function(res){
+        setsales(res)
+        const slice = res.slice(offset, offset + perPage);        
+        setData(slice);
+        setpageCount(Math.ceil(res.length / perPage));
+        }
     })
   }
 
-  const getSales = () =>{
-      Axios.get("/Sales/GetSales")
-        .then((res) => {
-            setsales(res.data)
-        })
-        .catch((err) => {
-            console.log(err)
+  const handlePaginationClick = (e) => {
+    const selectedPage = e.selected;
+    const offsets = selectedPage * perPage;
+    setOffset(offsets);
+  }
+
+  const getStores = () => {
+    $.ajax({
+      method: "GET",
+      url: "/Stores/GetStore",
+      dataType: 'json',
+      success: function(res){
+        setstores(res);
+      }
     })
   }
 
-  const handleEditSale = (sale) => {
-    setsale(sale);
-    setopenEdit(true);
+  const getProducts = () => {
+    $.ajax({
+      method: "GET",
+      url: "/Products/GetProduct",
+      dataType: 'json',
+      success: function(res){
+        setproducts(res);
+      }
+    })
   }
 
-  const handleDeleteSale = (sale) => {
-    setsale(sale);
-    setopenDelete(true);
+  const setPageSize = (e, data) => {
+    setPerPage(data.value);
   }
 
+  return (
+    <div>
+      <div>
+        <CreateSalesModal customers={customers} products={products} stores={stores} />
+      </div>
+      <div>
+        <Table striped sortable celled fixed>
+              <Table.Header>
+              <Table.Row>
+                      <Table.HeaderCell>Customer</Table.HeaderCell>
+                      <Table.HeaderCell>Product</Table.HeaderCell>
+                      <Table.HeaderCell>Store</Table.HeaderCell>
+                      <Table.HeaderCell>DateSold</Table.HeaderCell>
+                      <Table.HeaderCell>Actions</Table.HeaderCell>
+                      <Table.HeaderCell>Actions</Table.HeaderCell>
+              </Table.Row>
+              </Table.Header>
 
-  if(customers.length >= 1 && products.length >= 1 && stores.length >= 1){
-    return (
-        <div>
-            <CreateSalesModal customers={customers} products={products} stores={stores}
-                open={open} handleModal={(value) => setopen(value)} />
-                
-            <EditSalesModal customers={customers} products={products} stores={stores} sale={sale}
-                openEdit={openEdit} handleModal={(value) => setopenEdit(value)} />
-            
-            <DeleteSalesModal sale= {sale} opendelete={opendelete}
-                handleModal={(value) => setopenDelete(value)} />
-
-            <Button content="New Sale" color="blue" onClick={() => setopen(true)}></Button>
-            
-                <Table sortable striped>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>Customer</Table.HeaderCell>
-                            <Table.HeaderCell>Product</Table.HeaderCell>
-                            <Table.HeaderCell>Store</Table.HeaderCell>
-                            <Table.HeaderCell>Date Sold</Table.HeaderCell>                            
-                            <Table.HeaderCell>Actions</Table.HeaderCell>
-                            <Table.HeaderCell>Actions</Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-
-
-                        {sales.map((sale, index) => {      
-                        
-                            const cleanedDate = new Date(sale.dateSold).toDateString();
-                            const customerLabel = customers.filter(e => e.value === sale.customerId);
-                            const productLabel = products.filter(e => e.value === sale.productId);
-                            const storeLabel = stores.filter(e => e.value === sale.storeId);
-
-                            return(
-                                <Table.Row className="sales-row" key ={sale.salesId}> 
-                                    <Table.Cell>{customerLabel[index].label}</Table.Cell>
-                                    <Table.Cell>{productLabel[index].label}</Table.Cell>
-                                    <Table.Cell>{storeLabel[index].label}</Table.Cell>
-                                    <Table.Cell>{cleanedDate}</Table.Cell>
-                                    <Table.Cell>
-                                        <Button content="EDIT" color='yellow' icon='edit' labelPosition='left' onClick={() => handleEditSale(sale)}></Button>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Button content="DELETE" color='red' icon='edit' labelPosition='left' onClick={() => handleDeleteSale(sale)}></Button>
-                                    </Table.Cell>
-                                </Table.Row>
-                            )
-                        })}
-                    </Table.Body>
-                </ Table>
-            </div>
-        )
-    }
-    else{
-        return(
-            <div>
-            <Button disabled ='true' content="New Sale" color="blue" onClick={() => setopen(true)}></Button>
-
-            <Table celled>
-                    <Table.Header>
-                        <Table.Row>
-                            <Table.HeaderCell>Customer</Table.HeaderCell>
-                            <Table.HeaderCell>Product</Table.HeaderCell>
-                            <Table.HeaderCell>Store</Table.HeaderCell>
-                            <Table.HeaderCell>Date Sold</Table.HeaderCell>                            
-                            <Table.HeaderCell>Actions</Table.HeaderCell>
-                            <Table.HeaderCell>Actions</Table.HeaderCell>
-                        </Table.Row>
-                    </Table.Header>
-                    <Table.Body>
-                    </Table.Body>
-                </ Table>
-            </div>
-        )
-    }
-}
+          <Table.Body className='tbody-class'>
+                {data.map(sale => {
+                  const cleanedDate = new Date(sale.dateSold).toDateString();
+                    return (
+                      <Table.Row className="sales-row" key ={sale.salesId}>
+                      <Table.Cell>{sale.customer.name}</Table.Cell>
+                      <Table.Cell>{sale.product.name}</Table.Cell>
+                      <Table.Cell>{sale.store.name}</Table.Cell>
+                      <Table.Cell>{cleanedDate}</Table.Cell>
+                      <Table.Cell>
+                      <EditSalesModal
+                        sale={sale}
+                        customers={customers}
+                        products={products}
+                        stores={stores}
+                      />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <DeleteSalesModal sale={sale} />
+                    </Table.Cell>
+                  </Table.Row>    
+                    )
+                })}
+          </Table.Body>
+        </ Table>
+        <Select className="select-filter" defaultValue={perPage}
+            options={[5,10,20,30,40,50].map((p, index) => {
+                return {
+                    key: index,
+                    value: p,
+                    text: p
+                }
+            })} onChange={setPageSize}>
+        </Select>
+        <ReactPaginate
+            pageCount={pageCount}
+            marginPagesDisplayed={0}
+            pageRangeDisplayed={3}
+            onPageChange={handlePaginationClick}
+            containerClassName={"pagination"}
+            subContainerClassName={"pages pagination"}
+            activeClassName={"active"}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default Sales
