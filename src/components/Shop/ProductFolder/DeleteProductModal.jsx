@@ -1,18 +1,18 @@
 import React from "react";
-import Axios from "axios";
 import { Button, Modal} from "semantic-ui-react";
+import $ from 'jquery';
 
 const DeleteProductModal = (props) => {
   const {opendelete, handleModal, product} = props;
   
   const handleDeleteProduct= (id) => {
-    Axios.delete(`/Products/DeleteProduct/${id}`)
-        .then((res) => {
-            handleModal(false);
-        })
-        .catch((err) => {
-            console.log(err)
-        });
+    $.ajax({
+      method: "DELETE",
+      url: `/Products/DeleteProduct/${id}`,
+      success: function(res){
+          handleModal(false);
+      }
+    })
   }
   
   return (
@@ -32,4 +32,3 @@ const DeleteProductModal = (props) => {
 }
   
 export default DeleteProductModal
-
