@@ -1,4 +1,4 @@
-.ui.sortable.striped.table {
+.ui.celled.fixed.sortable.table{
   width: 98%;
   margin: 20px 10px 20px 10px;
 
@@ -8,7 +8,48 @@ button.ui.blue.button{
   margin-left: 10px;
   margin-top: 5px;
 }
+button.ui.primary.button {
+  margin-left: 10px;
+  margin-top: 5px;
+}
 
 .ui.inverted.menu {
   height: 48px;
+}
+
+.ui.inverted.menu .item.logo {
+  font-size: 18px;
+}
+
+
+.pagination {
+  display: flex;
+  list-style: none;
+  outline: none;
+  float: right;
+}
+.pagination > .active > a{
+  background-color: #337ab7;
+  border-radius: 3px;
+  color: #fff;
+}
+.pagination > li > a{
+  padding: 5px 10px;
+  outline: none;
+  cursor: pointer;
+}
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus{
+  background-color: #337ab7 ;
+  outline: none ;
+}
+.pagination > li > a, .pagination > li > span{
+  color: #337ab7;
+}
+.pagination > li:first-child > a, .pagination > li:first-child > span, .pagination > li:last-child > a, .pagination > li:last-child > span{
+  border-radius: unset
+}
+
+.ui.selection.dropdown.select-filter {
+  min-width: 2em;
+  margin-left: 10px;
 }
