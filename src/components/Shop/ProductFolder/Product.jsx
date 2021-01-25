@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import { Button, Table, Select } from "semantic-ui-react";
+import { Button, Table, Select, Label } from "semantic-ui-react";
 import "semantic-ui-css/semantic.min.css";
 import CreateProductModal from "./CreateProductModal";
 import EditProductModal from "./EditProductModal";
@@ -13,13 +13,11 @@ const Product = (props) => {
   const [openEdit, setopenEdit] = useState(false);
   const [opendelete, setopenDelete] = useState(false);
   const [product, setproduct] = useState({});
-  const [order, setorder] = useState('DESC');
+  const [order, setorder] = useState();
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState([]);
   const [perPage, setPerPage] = useState(5);
   const [pageCount, setpageCount] = useState(0);
-  const [namedirection, setnamedirection] = useState();
-  const [pricedirection, setpricedirection] = useState();
 
   useEffect(() => {
       if(!open){
@@ -73,19 +71,13 @@ const Product = (props) => {
         case 'name':
           if(order === 'DESC'){
               sortProduct.sort((a, b) => a[sortKey].localeCompare(b[sortKey]));
-              setnamedirection('descending');
-              setpricedirection(null);
               const slice = sortProduct.slice(offset, offset + perPage);
               setData(slice);
-              setorder('ASC');
             }
             if(order === 'ASC'){
               sortProduct.sort((a, b) => b[sortKey].localeCompare(a[sortKey]));
-              setnamedirection('ascending');
-              setpricedirection(null);
               const slice = sortProduct.slice(offset, offset + perPage);
               setData(slice);
-              setorder('DESC');
             }
           break;
       case 'price':
@@ -94,22 +86,16 @@ const Product = (props) => {
             const sortedProduct = sortProduct
               .slice()
               .sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-            setnamedirection(null);
-            setpricedirection('descending');
             const slice = sortedProduct.slice(offset, offset + perPage);
             setData(slice);
-            setorder('ASC');
           }
           if(order === 'ASC') {
             const parsePrice = x => parseFloat(x.replace(/^\$/, '')) || 0
             const sortedProduct = sortProduct
               .slice()
               .sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-            setnamedirection(null);
-            setpricedirection('ascending');
             const slice = sortedProduct.slice(offset, offset + perPage);
             setData(slice);
-            setorder('DESC');
           }
           break;
       default:
@@ -138,8 +124,14 @@ const Product = (props) => {
             <Table striped sortable celled fixed>
                 <Table.Header>
                     <Table.Row>
-                        <Table.HeaderCell sorted={namedirection} onClick={() => onSort('name', order)}>Name</Table.HeaderCell>
-                        <Table.HeaderCell sorted={pricedirection} onClick={() => onSort('price', order)}>Price</Table.HeaderCell>
+                        <Table.HeaderCell>Name
+                          <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('name', 'DESC')} />
+                          <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('name', 'ASC')} />
+                        </Table.HeaderCell>
+                        <Table.HeaderCell>Price
+                          <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('price', 'DESC')} />
+                          <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('price', 'ASC')} />
+                        </Table.HeaderCell>
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                         <Table.HeaderCell>Actions</Table.HeaderCell>
                     </Table.Row>
