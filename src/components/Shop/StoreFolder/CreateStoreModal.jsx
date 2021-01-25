@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import Axios from "axios";
 import { Button, Form, Modal} from "semantic-ui-react";
-
+import $ from 'jquery';
 
 const CreateStoreModal = (props) => {
   const [name, setname] = useState();
@@ -9,17 +9,17 @@ const CreateStoreModal = (props) => {
   const {open, handleModal} = props;
 
   const createStore= () => {
-    Axios.post('/Stores/PostStore', {
-        name: name,
-        address: address
-    })
-    .then((res) => {
-        handleModal(false);
-    })
-    .catch((err) => {
-        console.log(err)
-    })
-  }
+    $.ajax({
+        method: "POST",
+        url: "/Stores/PostStore",
+        dataType: 'json',
+        data: JSON.stringify({ "name": name, "address" : address }),
+        contentType: 'application/json',
+        success: function(res){
+            handleModal(false);
+        }
+      })
+    }
   
   const handleChange = (e, field) => {
     switch(field){
