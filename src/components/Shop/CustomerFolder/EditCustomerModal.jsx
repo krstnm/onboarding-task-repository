@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import Axios from "axios";
 import { Button, Form, Modal} from "semantic-ui-react";
+import $ from 'jquery';
 
 const EditCustomerModal = (props) => {
   const [name, setname] = useState();
@@ -15,18 +16,17 @@ const EditCustomerModal = (props) => {
   }, [customer])
   
   const editCustomer = (id) => {
-    Axios.put(`/Customers/PutCustomer/${id}`, {
-        customerId: id,
-        name: name,
-        address: address
-    })
-    .then((res) => {
-        handleModal(false);
-    })
-    .catch((err) => {
-        console.log(err)
-    })
-  }
+    $.ajax({
+        method: "PUT",
+        url: `/Customers/PutCustomer/${id}`,
+        dataType: 'json',
+        data: JSON.stringify({ "customerId": id, "name": name, "address" : address }),
+        contentType: 'application/json',
+        success: function(res){
+            handleModal(false);
+        }
+      })
+    }
   
   const handleChange = (e, field) => {
     switch(field){
