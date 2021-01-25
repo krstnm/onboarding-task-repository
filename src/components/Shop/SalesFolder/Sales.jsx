@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Select } from "semantic-ui-react";
+import { Table, Select, Label } from "semantic-ui-react";
 import CreateSalesModal from "./CreateSalesModal";
 import EditSalesModal from "./EditSalesModal";
 import DeleteSalesModal from "./DeleteSalesModal";
@@ -11,30 +11,17 @@ const Sales = () => {
   const [customers, setcustomers] = useState([]);
   const [products, setproducts] = useState([]);
   const [stores, setstores] = useState([]);
-  const [order, setorder] = useState('DESC');
   const [offset, setOffset] = useState(0);
   const [data, setData] = useState([]);
   const [perPage, setPerPage] = useState(5);
   const [pageCount, setpageCount] = useState(0);
-  const [custdirection, setcusdirection] = useState();
 
-  useEffect(() => {
-    if (sales) {
-      getSales();
-    }
-    if (customers) {
-      getCustomers();
-    }
-    if (products) {
-      getProducts();
-    }
-    if (stores) {
-      getStores();
-    }
-  }, [sales]);
 
   useEffect(() => {
     getSales()
+    getCustomers()
+    getProducts()
+    getStores()
   }, [offset, perPage])
 
   const getCustomers = () => {
@@ -94,6 +81,62 @@ const Sales = () => {
     setPerPage(data.value);
   }
 
+  const onSort = (sortKey,order) => {
+    let sortSales = [...sales];
+    switch(sortKey){
+        case 'customer':
+          if(order === 'DESC'){
+              sortSales.sort((a, b) => a.customer.name.localeCompare(b.customer.name))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+            if(order === 'ASC'){
+              sortSales.sort((a, b) => b.customer.name.localeCompare(a.customer.name))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+          break; 
+        case 'product':
+          if(order === 'DESC'){
+              sortSales.sort((a, b) => a.product.name.localeCompare(b.product.name))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+            if(order === 'ASC'){
+              sortSales.sort((a, b) => b.product.name.localeCompare(a.product.name))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+          break;  
+        case 'store':
+          if(order === 'DESC'){
+              sortSales.sort((a, b) => a.store.name.localeCompare(b.store.name))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+            if(order === 'ASC'){
+              sortSales.sort((a, b) => b.store.name.localeCompare(a.store.name))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+          break;         
+        case 'dateSold':
+          if(order === 'DESC'){
+              sortSales.sort((a, b) => new Date(a.dateSold) - new Date(b.dateSold))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+            if(order === 'ASC'){
+              sortSales.sort((a, b) => new Date(b.dateSold) - new Date(a.dateSold))
+              const slice = sortSales.slice(offset, offset + perPage);
+              setData(slice);
+            }
+          break;
+      default:
+          throw new Error()
+  }
+}
+
   return (
     <div>
       <div>
@@ -103,10 +146,22 @@ const Sales = () => {
         <Table striped sortable celled fixed>
               <Table.Header>
               <Table.Row>
-                      <Table.HeaderCell>Customer</Table.HeaderCell>
-                      <Table.HeaderCell>Product</Table.HeaderCell>
-                      <Table.HeaderCell>Store</Table.HeaderCell>
-                      <Table.HeaderCell>DateSold</Table.HeaderCell>
+                      <Table.HeaderCell>Customer
+                        <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('customer', 'DESC')} />
+                        <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('customer', 'ASC')} />
+                      </Table.HeaderCell>
+                      <Table.HeaderCell>Product
+                        <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('product', 'DESC')} />
+                        <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('product', 'ASC')} />
+                      </Table.HeaderCell>
+                      <Table.HeaderCell>Store
+                        <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('store', 'DESC')} />
+                        <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('store', 'ASC')} />
+                      </Table.HeaderCell>
+                      <Table.HeaderCell>DateSold
+                        <Label className='sort-icon-down' icon='caret down' onClick={() => onSort('dateSold', 'DESC')} />
+                        <Label className='sort-icon-up' icon='caret up' onClick={() => onSort('dateSold', 'ASC')} />
+                      </Table.HeaderCell>
                       <Table.HeaderCell>Actions</Table.HeaderCell>
                       <Table.HeaderCell>Actions</Table.HeaderCell>
               </Table.Row>
@@ -160,4 +215,4 @@ const Sales = () => {
   );
 };
 
-export default Sales
+export default Sales  
