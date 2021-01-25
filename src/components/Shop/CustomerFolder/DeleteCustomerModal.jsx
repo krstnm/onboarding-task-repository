@@ -1,20 +1,19 @@
-import React, {useState} from "react";
-import Axios from "axios";
+import React from "react";
 import { Button, Modal} from "semantic-ui-react";
+import $ from 'jquery';
 
 const DeleteCustomerModal = (props) => {
-  const [customers, setcustomers] = useState([]);
   const {opendelete, handleModal, customer} = props;
 
   
   const handleDeleteCustomer = (id) => {
-    Axios.delete(`/Customers/DeleteCustomer/${id}`)
-        .then((res) => {
+    $.ajax({
+      method: "DELETE",
+      url: `/Customers/DeleteCustomer/${id}`,
+      success: function(res){
           handleModal(false);
-        })
-        .catch((err) => {
-            console.log(err)
-        });
+      }
+    })
   }
   
   return (
@@ -24,8 +23,8 @@ const DeleteCustomerModal = (props) => {
           <p>Are you sure?</p>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={() => handleModal(false)}>
-            Cancel
+          <Button color='black' onClick={() => handleModal(false)}>
+            cancel
           </Button>
           <Button content="delete" color='red' icon='delete' labelPosition='left' onClick={() => handleDeleteCustomer(customer.customerId)}/>
         </Modal.Actions>
