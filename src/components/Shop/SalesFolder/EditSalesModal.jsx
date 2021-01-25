@@ -57,7 +57,7 @@ const EditSalesModal = (props) => {
         <Form>
         <Form.Field>
             <label>Date Sold</label>
-            <DatePicker selected={Date.parse(startDate)} defaultDate={Date.parse(startDate)} label='Date Sold'  dateFormat="MM/dd/yyyy" onChange={date => setStartDate(date)} />
+            <DatePicker selected={Date.parse(sale.dateSold)} defaultDate={Date.parse(sale.dateSold)} label='Date Sold'  dateFormat="MM/dd/yyyy" onChange={date => setStartDate(date)} />
             </Form.Field>
           <Form.Field>
             <label>Customer</label>
