@@ -1,18 +1,19 @@
 import React from "react";
 import Axios from "axios";
 import { Button, Modal} from "semantic-ui-react";
+import $ from 'jquery';
 
 const DeleteStoreModal = (props) => {
   const {opendelete, handleModal, store} = props;
   
   const handleDeleteStore = (id) => {
-    Axios.delete(`/Stores/DeleteStore/${id}`)
-        .then((res) => {
-            handleModal(false);
-        })
-        .catch((err) => {
-            console.log(err)
-        });
+    $.ajax({
+      method: "DELETE",
+      url: `/Stores/DeleteStore/${id}`,
+      success: function(res){
+          handleModal(false);
+      }
+    })
   }
   
   return (
@@ -22,8 +23,8 @@ const DeleteStoreModal = (props) => {
           <p>Are you sure?</p>
         </Modal.Content>
         <Modal.Actions>
-          <Button onClick={() => handleModal(false)}>
-            Cancel
+          <Button color='black' onClick={() => handleModal(false)}>
+            cancel
           </Button>
           <Button content="delete" color='red' icon='delete' labelPosition='left' onClick={() => handleDeleteStore(store.storeId)}/>
         </Modal.Actions>
@@ -32,4 +33,3 @@ const DeleteStoreModal = (props) => {
 }
   
 export default DeleteStoreModal
-
